@@ -56,4 +56,35 @@ class Sort
 
 	end
 
+	def sort
+		start = Time.new
+		puts merge_sort.to_s
+		puts Time.new - start
+	end
+
+	def merge_sort(m=@list_to_sort)
+		return m if m.length <= 1
+ 
+		middle = m.length / 2
+		t1 = Thread.new do
+			# sort the left
+			merge_sort(m[0...middle])
+		end
+		t2 = Thread.new do
+			# sort the right
+			merge_sort(m[middle..-1])
+		end
+
+		# merge left and right
+		merge(t1.value, t2.value)
+	end
+
+	def merge(left, right)
+		result = []
+  		until left.empty? || right.empty?
+    		result << (left.first<=right.first ? left.shift : right.shift)
+  		end
+  		result + left + right
+	end
+
 end
