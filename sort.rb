@@ -1,23 +1,23 @@
-require_relative 'assertions'
+require_relative 'contract.rb'
 
 class Sort
-	include Assertions
+	include Contract
 	
-	@@allowed_extensions = {".csv"=>",", ".tsv"=>"\t", ".txt"=>" "}
 
+	@@allowed_extensions = {".csv"=>",", ".tsv"=>"\t", ".txt"=>" "}
 	@duration
 	@list_to_sort
 
+
 	def initialize(*args)
-		assert(args.length >= 2, "must provide duration and objects", :ArgumentError)
-		assert(is_number?(args[0]), "must provide numeric duration", :ArgumentError)
+
+		pre_initialize(*args)
 
 		@duration = args[0].to_f
 
 		# filename given where extension tells what delimiter is
 		if args.length == 2
 			puts "got a file"
-
 			# read from the file, separating items by delimiter
 			@list_to_sort = parse_file(args[1])
 
@@ -25,34 +25,19 @@ class Sort
 		elsif args[1].is_a?(Proc)
 			puts "got a proc"
 			# assign the proc to <=> somehow
-
 			@list_to_sort = args.drop(2)
 
 		# list of objects that already are comparable given
 		else
 			puts "got some args"
-
 			@list_to_sort = args.drop(1)
 		end
 
-		assert(@duration.is_a?(Numeric), "duration should be a number", :TypeError)
-		assert(@duration > 0, "duration must be positive", :RangeError)
-		assert(@list_to_sort.kind_of?(Array), 
-			"objects to sort must be stored in Array", :TypeError)
-		assert(@list_to_sort.length > 0, 
-			"no valid objects to sort", :RangeError)
-		assert(@list_to_sort.all? {|i| i.is_a?(@list_to_sort[0].class) }, 
-			"all elements must be of same type", :TypeError)
-		# ^^ http://stackoverflow.com/questions/12158954/can-i-check-if-an-array-e-g-just-holds-integers-in-ruby
-		# answered by Sergio Tulentsev on Aug 28 '12 at 12:14
-		assert(@list_to_sort.all? {|i| i.respond_to?("<=>") }, 
-			"all elements must be comparable", :NoMethodError)
+		invariant(@list_to_sort)
 	end
 
 	def parse_file(filename)
-		assert(filename =~ /.+(#{@@allowed_extensions.keys.join("|")})/,
-			"invalid specification of filename", :ArgumentError)
-
+		pre_parse_file(filename, @@allowed_extensions)
 		@@allowed_extensions.each do |key, delimiter|
 			if filename =~ /.+(#{key})/
 				@delimiter = delimiter
@@ -60,12 +45,10 @@ class Sort
 			end
 		end
 
-		# add each element to the array
-
+		invariant(@list_to_sort)
 	end
 
 	def sort
-		# no preconditions, since the constructor worked fine?
 		
 		start = Time.new
 		result = merge_sort.to_s
@@ -74,31 +57,9 @@ class Sort
 		puts Time.new - start
 
 		# check the post-conditions:
-		assert(result.length = @list_to_sort.length, 
-			"sorting a list should not change its length", :RangeError)
-		assert(
-			@list_to_sort.each_with_object(Hash.new(0)) { |obj,counts| counts[obj] += 1 } == 
-			result.each_with_object(Hash.new(0)) { |obj,counts| counts[obj] += 1 },
-			"sorting a list should only move elements - not change them",
-			:ArgumentError)
-		assert(result.each_cons(2).all? { |a, b| (a <=> b) != 1 }, 
-			"elements must be in sorted order", :RangeError)
-		# ^^ http://stackoverflow.com/questions/8015775/check-to-see-if-an-array-is-already-sorted
-		# answered by Marc-André Lafortune on Nov 4 '11 at 21:34
-
-		# check the invariant:
-		assert(@duration.is_a?(Numeric), "duration should be a number", :TypeError)
-		assert(@duration > 0, "duration must be positive", :RangeError)
-		assert(@list_to_sort.kind_of?(Array), 
-			"objects to sort must be stored in Array", :TypeError)
-		assert(@list_to_sort.length > 0, 
-			"no valid objects to sort", :RangeError)
-		assert(@list_to_sort.all? {|i| i.is_a?(@list_to_sort[0].class) }, 
-			"all elements must be of same type", :TypeError)
-		# ^^ http://stackoverflow.com/questions/12158954/can-i-check-if-an-array-e-g-just-holds-integers-in-ruby
-		# answered by Sergio Tulentsev on Aug 28 '12 at 12:14
-		assert(@list_to_sort.all? {|i| i.respond_to?("<=>") }, 
-			"all elements must be comparable", :NoMethodError)
+		
+		post_sort(@list_to_sort, result)
+		invariant(@list_to_sort)
 	end
 
 	def merge_sort(m=@list_to_sort)
@@ -115,6 +76,8 @@ class Sort
 		end
 		t1.join
 		t2.join
+
+		invariant(@list_to_sort)
 		merge(t1.value, t2.value)
 	end
 
@@ -124,6 +87,7 @@ class Sort
   		until left.empty? || right.empty?
     		result << (left.first<=right.first ? left.shift : right.shift)
   		end
+  		invariant(@list_to_sort)
   		result + left + right
 	end
 
