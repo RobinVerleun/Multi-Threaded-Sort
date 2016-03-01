@@ -35,6 +35,7 @@ class Sort
 			@list_to_sort = args.drop(1)
 		end
 
+		assert(@duration.is_a?(Numeric), "duration should be a number", :TypeError)
 		assert(@list_to_sort.kind_of?(Array), 
 			"objects to sort must be stored in Array", :TypeError)
 		assert(@list_to_sort.length > 0, 
@@ -63,12 +64,15 @@ class Sort
 	end
 
 	def sort
+		# no preconditions, since the constructor worked fine?
+		
 		start = Time.new
 		result = merge_sort.to_s
 		puts result
 		# puts parallel_merge_sort.to_s
 		puts Time.new - start
 
+		# check the post-conditions:
 		assert(result.length = @list_to_sort.length, 
 			"sorting a list should not change its length", :RangeError)
 		assert(
@@ -80,6 +84,19 @@ class Sort
 			"elements must be in sorted order", :RangeError)
 		# ^^ http://stackoverflow.com/questions/8015775/check-to-see-if-an-array-is-already-sorted
 		# answered by Marc-André Lafortune on Nov 4 '11 at 21:34
+
+		# check the invariant:
+		assert(@duration.is_a?(Numeric), "duration should be a number", :TypeError)
+		assert(@list_to_sort.kind_of?(Array), 
+			"objects to sort must be stored in Array", :TypeError)
+		assert(@list_to_sort.length > 0, 
+			"no valid objects to sort", :RangeError)
+		assert(@list_to_sort.all? {|i| i.is_a?(@list_to_sort[0].class) }, 
+			"all elements must be of same type", :TypeError)
+		# ^^ http://stackoverflow.com/questions/12158954/can-i-check-if-an-array-e-g-just-holds-integers-in-ruby
+		# answered by Sergio Tulentsev on Aug 28 '12 at 12:14
+		assert(@list_to_sort.all? {|i| i.respond_to?("<=>") }, 
+			"all elements must be comparable", :NoMethodError)
 	end
 
 	def merge_sort(m=@list_to_sort)
