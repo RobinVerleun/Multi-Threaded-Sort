@@ -7,12 +7,10 @@ class Sort
 
 	@duration
 	@list_to_sort
-	@result
 
 	def initialize(*args)
-		puts args.length.to_s
-		assert(args.length >= 2, "must provide duration and objects")
-		assert(is_number?(args[0]), "must provide numeric duration")
+		assert(args.length >= 2, "must provide duration and objects", :ArgumentError)
+		assert(is_number?(args[0]), "must provide numeric duration", :ArgumentError)
 
 		@duration = args[0].to_f
 
@@ -37,16 +35,21 @@ class Sort
 			@list_to_sort = args.drop(1)
 		end
 
-		@result = Array.new(@list_to_sort.length)
-
-		assert(@list_to_sort.kind_of?(Array), "array of objects to sort not present")
-		assert(@list_to_sort.length > 0, "no valid objects to sort")
-		# TODO: assert that all of the elements in the list have the same class
+		assert(@list_to_sort.kind_of?(Array), 
+			"objects to sort must be stored in Array", :TypeError)
+		assert(@list_to_sort.length > 0, 
+			"no valid objects to sort", :RangeError)
+		assert(@list_to_sort.all? {|i| i.is_a?(@list_to_sort[0].class) }, 
+			"all elements must be of same type", :TypeError)
+		# ^^ http://stackoverflow.com/questions/12158954/can-i-check-if-an-array-e-g-just-holds-integers-in-ruby
+		# answered by Sergio Tulentsev on Aug 28 '12 at 12:14
+		assert(@list_to_sort.all? {|i| i.respond_to?("<=>") }, 
+			"all elements must be comparable", :NoMethodError)
 	end
 
 	def parse_file(filename)
 		assert(filename =~ /.+(#{@@allowed_extensions.keys.join("|")})/,
-			"invalid specification of filename")
+			"invalid specification of filename", :ArgumentError)
 
 		@@allowed_extensions.each do |key, delimiter|
 			if filename =~ /.+(#{key})/
@@ -61,9 +64,22 @@ class Sort
 
 	def sort
 		start = Time.new
-		puts merge_sort.to_s
+		result = merge_sort.to_s
+		puts result
 		# puts parallel_merge_sort.to_s
 		puts Time.new - start
+
+		assert(result.length = @list_to_sort.length, 
+			"sorting a list should not change its length", :RangeError)
+		assert(
+			@list_to_sort.each_with_object(Hash.new(0)) { |obj,counts| counts[obj] += 1 } == 
+			result.each_with_object(Hash.new(0)) { |obj,counts| counts[obj] += 1 },
+			"sorting a list should only move elements - not change them",
+			:TypeError)
+		assert(result.each_cons(2).all? { |a, b| (a <=> b) != 1 }, 
+			"elements must be in sorted order", :RangeError)
+		# ^^ http://stackoverflow.com/questions/8015775/check-to-see-if-an-array-is-already-sorted
+		# answered by Marc-André Lafortune on Nov 4 '11 at 21:34
 	end
 
 	def merge_sort(m=@list_to_sort)
@@ -107,11 +123,11 @@ class Sort
 
 			t1.join
 			t2.join
-			parallel_merge(a[p..q], a[q + 1..r])
+			parallel_merge(a[p..q], a[q + 1..r], Array.new(@list_to_sort.length))
 		end
 	end
 
-	def parallel_merge(left, right, result=@result)
+	def parallel_merge(left, right, result)
 		# broken function that we want to make work
 
 		left = left.flatten
