@@ -36,6 +36,7 @@ class Sort
 		end
 
 		assert(@duration.is_a?(Numeric), "duration should be a number", :TypeError)
+		assert(@duration > 0, "duration must be positive", :RangeError)
 		assert(@list_to_sort.kind_of?(Array), 
 			"objects to sort must be stored in Array", :TypeError)
 		assert(@list_to_sort.length > 0, 
@@ -79,7 +80,7 @@ class Sort
 			@list_to_sort.each_with_object(Hash.new(0)) { |obj,counts| counts[obj] += 1 } == 
 			result.each_with_object(Hash.new(0)) { |obj,counts| counts[obj] += 1 },
 			"sorting a list should only move elements - not change them",
-			:TypeError)
+			:ArgumentError)
 		assert(result.each_cons(2).all? { |a, b| (a <=> b) != 1 }, 
 			"elements must be in sorted order", :RangeError)
 		# ^^ http://stackoverflow.com/questions/8015775/check-to-see-if-an-array-is-already-sorted
@@ -87,6 +88,7 @@ class Sort
 
 		# check the invariant:
 		assert(@duration.is_a?(Numeric), "duration should be a number", :TypeError)
+		assert(@duration > 0, "duration must be positive", :RangeError)
 		assert(@list_to_sort.kind_of?(Array), 
 			"objects to sort must be stored in Array", :TypeError)
 		assert(@list_to_sort.length > 0, 
