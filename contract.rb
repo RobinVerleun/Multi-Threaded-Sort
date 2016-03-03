@@ -39,8 +39,6 @@ module Contract
 	end
 
 	def post_sort(list_to_sort, result)
-		# nothing to check
-		# Is there a property we could quickly run to help verify that the comparables are sorted?
 		assert(result.length == list_to_sort.length, 
 			"sorting a list should not change its length", :RangeError)
 		assert(

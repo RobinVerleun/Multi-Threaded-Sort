@@ -51,15 +51,13 @@ class Sort
 	def sort
 		
 		start = Time.new
-		result = merge_sort.to_s
-		puts result
-		# puts parallel_merge_sort.to_s
+		result = merge_sort
 		puts Time.new - start
-
-		# check the post-conditions:
 		
 		post_sort(@list_to_sort, result)
 		invariant(@list_to_sort)
+
+		result
 	end
 
 	def merge_sort(m=@list_to_sort)
@@ -104,9 +102,7 @@ class Sort
 				parallel_merge_sort(a, q + 1, r)
 			end
 
-			t1.join
-			t2.join
-			parallel_merge(a[p..q], a[q + 1..r], Array.new(@list_to_sort.length))
+			parallel_merge(t1.value, t2.value) # join and get results in one go
 		end
 	end
 
@@ -120,15 +116,12 @@ class Sort
 		puts result.to_s
 		if right.length > left.length
 			t1 = Thread.new do
-				parallel_merge(right, left, result)
+				parallel_merge(right, left)
 			end
-			t1.value
-			# return t1.value # implicit join
 		elsif left.length + right.length == 1
+			# left has length 1, right is empty
 			result[0] = left[0]
-			result
-			# return left
-		elsif right.length == 1 # and left.length == 1
+		elsif right.length == 1 # => left.length == 1 also
 			if left[0] <= right[0]
 				result[0] = left[0]
 				result[1] = right[0]
@@ -142,42 +135,56 @@ class Sort
 			# find j st right[j] <= left[length/2] <= right[j + 1] using binary search
 			j = find_split_index(right, left[left.length/2])
 			t1 = Thread.new do
-				puts "shorter result: " + result[0..right.length/2 + j]
 				parallel_merge(right[0..right.length/2], left[0..j], result[0..right.length/2 + j])
 			end
 			t2 = Thread.new do
-				puts "shorter result: " + result[right.length/2 + j + 1..-1].to_s
 				parallel_merge(right[right.length/2 + 1..-1], left[j + 1..-1], result[right.length/2 + j + 1..-1])
 			end
-			# t1.join
-			# t2.join
-
-			t1.value + t2.value
-			# return t1.value + t2.value # implicit join
+			t1.join
+			t2.join
 		end
 	end
 
-	def find_split_index(array, val)
-		low = 0
-		high = array.length-1
+	# def find_split_index(array, val)
+	# 	# TODO: parallelize this (& make it recursive)
 
-		if val <= array[low]
-			return low
-		elsif val >= array[high]
-			return high
-		end
+	# 	low = 0
+	# 	high = array.length-1
 
-		while high > low
+	# 	if val <= array[low]
+	# 		return low
+	# 	elsif val >= array[high]
+	# 		return high
+	# 	end
 
-			mid = (low + high)/2
+	# 	while high > low
 
-			if val > array[mid] and val < array[mid + 1]
-				return mid
-			elsif val > array[mid]
-				low = mid + 1
-			elsif val < array[mid]
-				high = mid - 1
-			end
+	# 		mid = (low + high)/2
+	# 		puts mid
+
+	# 		if val >= array[mid] and val <= array[mid + 1]
+	# 			return mid
+	# 		elsif val > array[mid]
+	# 			low = mid + 1
+	# 		elsif val < array[mid]
+	# 			high = mid - 1
+	# 		end
+	# 	end
+	# end
+
+	# returns index j such that array[j] <= val <= array[j + 1]
+	def binary_search(array, val, low, high)
+		assert(high >= low, "value outside of list to sort", :RangeError)
+	    return nil if high < low
+	    
+	    mid = (low + high) / 2
+
+	    if val >= array[mid] and val <= array[mid + 1]
+			return mid
+		elsif val > array[mid]
+			binary_search(array, val, mid + 1, high)
+		elsif val < array[mid]
+			binary_search(array, val, low, mid - 1)
 		end
 	end
 end
