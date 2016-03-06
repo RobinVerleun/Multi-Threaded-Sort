@@ -9,8 +9,7 @@ class Sort
 		@comparator = Proc.new { |v1, v2| v1 <=> v2 }
 	end
 
-	def start#(objects)
-		#@list_to_sort = objects
+	def start
 		parallel_merge_sort(@list_to_sort, 0, @list_to_sort.size)
 		return @list_to_sort
 	end
