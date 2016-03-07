@@ -65,7 +65,7 @@ module Contract
 
 	def post_new_list(list_to_sort, comparator)
 		list_to_sort.each_with_index do |obj, index|
-			assert(!comparator.call(obj, list_to_sort[i-1]).nil?, "Objects must be comparable.", :RuntimeError)
+			assert(!comparator.call(obj, list_to_sort[index-1]).nil?, "Objects must be comparable.", :RuntimeError)
 		end
 	end
 
