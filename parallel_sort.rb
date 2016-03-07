@@ -48,6 +48,7 @@ class Sort
 			end
 			rescue Timeout::Error
 				puts "Sort timed out."
+				return
 			end
 
 		invariant(@list_to_sort, @comparator)
