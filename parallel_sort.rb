@@ -96,7 +96,7 @@ class Sort
 
 		#List of length 2
 		elsif left_chunk.length == 1
-			if left_chunk[0] <= right_chunk[0]
+			if @comparator.call(left_chunk[0], right_chunk[0]) < 1
 				list_to_sort[start_index] = left_chunk[0]
 				list_to_sort[start_index + 1] = right_chunk[0]
 			else
