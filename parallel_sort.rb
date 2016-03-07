@@ -17,6 +17,19 @@ class Sort
 		invariant(@list_to_sort, @comparator)
 	end
 
+	def self.from_file(filename)
+		#pre_parse_file(filename, @@allowed_extensions)
+		extensions = {".csv"=>",", ".tsv"=>"\t", ".txt"=>" "}
+
+		delimiter = extensions[filename[-4..-1]]
+		the_list = []
+		File.open(filename, "r") do |infile|
+			the_list = infile.gets.split(delimiter)
+		end
+
+		Sort.new(the_list)
+	end
+
 	def start(duration_)
 		pre_start(duration_)
 
