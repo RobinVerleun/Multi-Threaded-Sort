@@ -13,6 +13,7 @@ class Sort
 
 		@list_to_sort = args
 		@comparator = Proc.new { |v1, v2| v1 <=> v2 }
+		@comparator = yield if block_given?
 
 		invariant(@list_to_sort, @comparator)
 	end

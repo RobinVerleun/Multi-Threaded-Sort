@@ -17,11 +17,10 @@ stringlist = [
 	"O - Starts with O"
 ]
 
-b = Sort.new(a)
+b = Sort.new(a){Proc.new { |v1, v2| v2 <=> v1 }}
 # Or this:
 #b = Sort.from_file("test.csv")
 
-b.define_comparator(Proc.new { |v1, v2| v2 <=> v1 }) # sort descending
 
 b.start(0.1)
 
