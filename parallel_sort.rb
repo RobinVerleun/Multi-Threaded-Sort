@@ -1,20 +1,42 @@
+require 'timeout'
+require_relative 'contract.rb'
 
 class Sort	
+	include Contract
 
 	@list_to_sort
+	@duration
 	@comparator
 
 	def initialize(args)
+		pre_initialize(args)
+
 		@list_to_sort = args
 		@comparator = Proc.new { |v1, v2| v1 <=> v2 }
+
+		invariant(@list_to_sort, @comparator)
 	end
 
-	def start
-		parallel_merge_sort(@list_to_sort, 0, @list_to_sort.size)
+	def start(duration_)
+		pre_start(duration_)
+
+		@duration = duration_
+		begin
+			Timeout::timeout(@duration) do
+				parallel_merge_sort(@list_to_sort, 0, @list_to_sort.size)
+			end
+			rescue Timeout::Error
+				puts "Sort timed out."
+			end
+
+		invariant(@list_to_sort, @comparator)
+
 		return @list_to_sort
 	end
 
 	def parallel_merge_sort(a=@list_to_sort, p=0, r=@list_to_sort.length)
+
+		pre_parallel_merge_sort(a,p,r)
 
 		if p < r
 			q = ((p + r)/2).floor
@@ -29,10 +51,16 @@ class Sort
 			parallel_merge(a[p..q], a[q + 1..r], a, p)
 
 		end
+
+		#post_parallel_merge_sort(@list_to_sort)
+		invariant(@list_to_sort, @comparator)
+
 	end
 
 	def parallel_merge(left_chunk, right_chunk, list_to_sort, start_index)
 		
+		pre_parallel_merge(left_chunk, right_chunk, list_to_sort, start_index)
+
 		threads = []
 
 		if right_chunk.length > left_chunk.length # choose to have larger array come first
@@ -96,10 +124,18 @@ class Sort
 		end
 		threads.each { |t| t.join }
 
+		post_parallel_merge
+		invariant(@list_to_sort, @comparator)
+
 	end
 
 	def new_list(objects)
+		pre_new_list(objects)
+
 		@list_to_sort = objects
+
+		post_new_list(@list_to_sort, @comparator)
+		invariant(@list_to_sort, @comparator)
 	end
 
 	def puts_list

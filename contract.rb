@@ -3,7 +3,7 @@ require_relative 'assertions.rb'
 module Contract
 	include Assertions
 
-	def invariant(list_to_sort)
+	def invariant(list_to_sort, comparator)
 		assert(list_to_sort.kind_of?(Array), 
 			"objects to sort must be stored in Array", :TypeError)
 		assert(list_to_sort.length > 0, 
@@ -12,20 +12,66 @@ module Contract
 			"all elements must be of same type", :TypeError)
 		# ^^ http://stackoverflow.com/questions/12158954/can-i-check-if-an-array-e-g-just-holds-integers-in-ruby
 		# answered by Sergio Tulentsev on Aug 28 '12 at 12:14
-		assert(list_to_sort.all? {|i| i.respond_to?("<=>") }, 
-			"all elements must be comparable", :NoMethodError)
+		assert(comparator.is_a?(Proc), "Comparator must be callable as a proc.", :RuntimeError)
 	end
 
 	def pre_initialize(*args)
-		assert(args.length >= 2, "must provide duration and objects, or duration and a file")
-		assert(is_number?(args[0]), "must provide numeric duration")
-		assert(args[0].to_i > 0, "duration must be positive", :RangeError)
+		assert(args.size > 0, "Cannot have zero elements to sort", :ArgumentError)
 	end
 
-	def post_initialize(list_to_sort)
-		# confirmed by invariant
+	def post_initialize(list_to_sort, comparator)
+		list_to_sort.each_with_index do |obj, index|
+			assert(!comparator.call(obj, list_to_sort[i-1]).nil?, "Objects must be comparable.", :RuntimeError)
+		end
 	end
 
+	def pre_start(duration_)
+		assert(duration_.is_a?(Float) || duration_.is_a?(Numeric), "Invalid duration.", :ArgumentError)
+		assert(duration_ > 0, "Cannot have a negative duration.", :ArgumentError)
+	end
+
+	def post_start
+	end
+
+	def pre_parallel_merge_sort(a, p, r)
+		assert(a.is_a?(Array), "Must be sorting an array.", :ArgumentError)
+		assert(p.is_a?(Numeric), "Index p must be a number.", :ArgumentError)
+		assert(r.is_a?(Numeric), "Index r must be a number.", :ArgumentError)
+		assert(p.between?(0, a.size), "Index p out of bounds.", :KeyError)
+		assert(r.between?(0, a.size), "Indes r out of bounds.", :KeyError)
+	end
+
+	def post_parallel_merge_sort(sorted_list)
+		sorted_list.size.times { |i|
+			while(i < sorted_list.size-1) do
+				assert(sorted_list[i] <= sorted_list[i+1], "List is not sorted.", :RuntimeError)
+			end
+		}
+	end
+
+	def pre_parallel_merge(left, right, list_to_sort, start_index)
+		assert(left.is_a?(Array), "Left partition must be an array.")
+		assert(right.is_a?(Array), "Right partition must be an array.")
+		assert(start_index.is_a?(Numeric), "Start index must be a number.")
+		assert(start_index >= 0, "Start index cannot be less than 0.", :KeyError)
+	end
+
+	def post_parallel_merge
+	end
+
+	def pre_new_list(objects)
+		assert(objects.size > 0, "Cannot have zero elements to sort", :ArgumentError)
+	end
+
+	def post_new_list(list_to_sort, comparator)
+		list_to_sort.each_with_index do |obj, index|
+			assert(!comparator.call(obj, list_to_sort[i-1]).nil?, "Objects must be comparable.", :RuntimeError)
+		end
+	end
+
+end
+
+=begin
 	def pre_parse_file(filename, extensions)
 		assert(filename =~ /.+(#{extensions.keys.join("|")})/, "invalid specification of filename")
 	end
@@ -70,3 +116,5 @@ module Contract
 	end
 
 end
+
+=end
