@@ -25,6 +25,13 @@ module Contract
 		end
 	end
 
+	def pre_define_comparator(comparator)
+		assert(comparator.is_a?(Proc), "Invalid comparator.", :TypeError)
+	end
+
+	def post_define_comparator
+	end
+
 	def pre_start(duration_)
 		assert(duration_.is_a?(Float) || duration_.is_a?(Numeric), "Invalid duration.", :ArgumentError)
 		assert(duration_ > 0, "Cannot have a negative duration.", :ArgumentError)

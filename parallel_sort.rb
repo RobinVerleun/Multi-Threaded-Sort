@@ -30,6 +30,14 @@ class Sort
 		Sort.new(the_list)
 	end
 
+	def define_comparator(comparator)
+		pre_define_comparator(comparator)
+
+		@comparator = comparator
+		
+		invariant(@list_to_sort, @comparator)
+	end
+
 	def start(duration_)
 		pre_start(duration_)
 
