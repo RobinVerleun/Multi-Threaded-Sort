@@ -3,18 +3,6 @@ require_relative 'assertions.rb'
 module Contract
 	include Assertions
 
-	def invariant(list_to_sort, comparator)
-		assert(list_to_sort.kind_of?(Array), 
-			"objects to sort must be stored in Array", :TypeError)
-		assert(list_to_sort.length > 0, 
-			"no valid objects to sort", :RangeError)
-		assert(list_to_sort.all? {|i| i.is_a?(@list_to_sort[0].class) }, 
-			"all elements must be of same type", :TypeError)
-		# ^^ http://stackoverflow.com/questions/12158954/can-i-check-if-an-array-e-g-just-holds-integers-in-ruby
-		# answered by Sergio Tulentsev on Aug 28 '12 at 12:14
-		assert(comparator.is_a?(Proc), "Comparator must be callable as a proc.", :RuntimeError)
-	end
-
 	def pre_initialize(*args)
 		assert(args.size > 0, "Cannot have zero elements to sort", :ArgumentError)
 	end
@@ -35,6 +23,7 @@ module Contract
 	def pre_sort(duration_)
 		assert(duration_.is_a?(Float) || duration_.is_a?(Numeric), "Invalid duration.", :ArgumentError)
 		assert(duration_ > 0, "Cannot have a negative duration.", :ArgumentError)
+
 	end
 
 	def post_sort
@@ -42,6 +31,10 @@ module Contract
 
 	def pre_parallel_merge_sort(a, p, r)
 		assert(a.is_a?(Array), "Must be sorting an array.", :ArgumentError)
+		assert(a.length > 0, 
+			"no valid objects to sort", :RangeError)
+		assert(a.all? {|i| i.is_a?(a[0].class) }, 
+			"all elements must be of same type", :TypeError)
 		assert(p.is_a?(Numeric), "Index p must be a number.", :ArgumentError)
 		assert(r.is_a?(Numeric), "Index r must be a number.", :ArgumentError)
 		assert(p.between?(0, a.size), "Index p out of bounds.", :KeyError)
