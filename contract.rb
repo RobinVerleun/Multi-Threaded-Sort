@@ -32,12 +32,12 @@ module Contract
 	def post_define_comparator
 	end
 
-	def pre_start(duration_)
+	def pre_sort(duration_)
 		assert(duration_.is_a?(Float) || duration_.is_a?(Numeric), "Invalid duration.", :ArgumentError)
 		assert(duration_ > 0, "Cannot have a negative duration.", :ArgumentError)
 	end
 
-	def post_start
+	def post_sort
 	end
 
 	def pre_parallel_merge_sort(a, p, r)

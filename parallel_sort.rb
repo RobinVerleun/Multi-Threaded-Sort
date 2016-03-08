@@ -31,8 +31,8 @@ class Array
 		Sort.new(the_list)
 	end
 
-	def start(duration_, &block)
-		pre_start(duration_)
+	def sort(duration_, &block)
+		pre_sort(duration_)
 
 		@duration = duration_
 		@list_to_sort = self

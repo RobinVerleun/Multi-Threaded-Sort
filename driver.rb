@@ -22,8 +22,8 @@ stringlist = [
 #b = Sort.from_file("test.csv")
 
 
-puts stringlist.start(10){ |v1, v2| v1 <=> v2 }
-puts a.start(10)
+puts stringlist.sort(10){ |v1, v2| v1 <=> v2 }
+puts a.sort(10)
 
 # b.start(10)
 # b.puts_list
