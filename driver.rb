@@ -17,5 +17,5 @@ stringlist = [
 	"O - Starts with O"
 ]
 
-puts a.sort(5.1){ |v1, v2| v1 <=> v2 }
+puts a.sort(0.01){ |v1, v2| v2 <=> v1 }
 

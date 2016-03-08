@@ -19,6 +19,22 @@ module Contract
 		assert(duration_.is_a?(Numeric), "Invalid duration - should be a number.", :ArgumentError)
 		assert(duration_ > 0, "Must have positive duration.", :ArgumentError)
 	end
+	# def pre_initialize(*args)
+	# 	assert(args.size > 0, "Cannot have zero elements to sort", :ArgumentError)
+	# end
+
+	# def post_initialize(list_to_sort, comparator)
+	# 	list_to_sort.each_with_index do |obj, index|
+	# 		assert(!comparator.call(obj, list_to_sort[i-1]).nil?, "Objects must be comparable.", :RuntimeError)
+	# 	end
+	# end
+
+	# def pre_define_comparator(comparator)
+	# 	assert(comparator.is_a?(Proc), "Invalid comparator.", :TypeError)
+	# end
+
+	# def post_define_comparator
+	# end
 
 	def post_sort(sorted_list, comparator)
 		(0..sorted_list.length - 2).step(1) { |i|
@@ -28,6 +44,10 @@ module Contract
 
 	def pre_parallel_merge_sort(a, p, r)
 		assert(a.is_a?(Array), "Must be sorting an array.", :ArgumentError)
+		assert(a.length > 0, 
+			"no valid objects to sort", :RangeError)
+		assert(a.all? {|i| i.is_a?(a[0].class) }, 
+			"all elements must be of same type", :TypeError)
 		assert(p.is_a?(Numeric), "Index p must be a number.", :ArgumentError)
 		assert(r.is_a?(Numeric), "Index r must be a number.", :ArgumentError)
 		assert(p.between?(0, a.size), "Index p out of bounds.", :KeyError)
