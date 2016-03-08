@@ -3,6 +3,27 @@ require_relative 'assertions.rb'
 module Contract
 	include Assertions
 
+	def pre_sort(duration_, self_)
+		assert(duration_.is_a?(Numeric), "Invalid duration - should be a number.", :ArgumentError)
+		assert(duration_ > 0, "Must have positive duration.", :ArgumentError)
+		assert(self.is_a?(Array), "Can only be called on Array type object.")
+		assert(self.length > 0, "Cannot be called on zero elements.")
+		assert(self_.all? {|obj| obj.is_a?(self_[0].class) }, "All elements must be of the same type.")
+	end
+
+	def post_sort(sorted_list, original_list, comparator)
+		(0..sorted_list.length - 2).step(1) { |i|
+			assert(comparator.call(sorted_list[i], sorted_list[i+1]) < 1, "List is not sorted.", :RuntimeError)
+		}
+		assert(sorted_list.length == original_list.length, 
+			"sorting a list should not change its length", :RangeError)
+		assert(
+			original_list.each_with_object(Hash.new(0)) { |obj,counts| counts[obj] += 1 } == 
+			sorted_list.each_with_object(Hash.new(0)) { |obj,counts| counts[obj] += 1 },
+			"Should be the same amount of each object after sorting as before sorting",
+			:RuntimeError)
+	end
+
 	# def invariant(list_to_sort, comparator)
 	# 	assert(list_to_sort.kind_of?(Array), 
 	# 		"objects to sort must be stored in Array", :TypeError)
@@ -15,10 +36,7 @@ module Contract
 	# 	assert(comparator.is_a?(Proc), "Comparator must be callable as a proc.", :RuntimeError)
 	# end
 
-	def pre_sort(duration_)
-		assert(duration_.is_a?(Numeric), "Invalid duration - should be a number.", :ArgumentError)
-		assert(duration_ > 0, "Must have positive duration.", :ArgumentError)
-	end
+
 	# def pre_initialize(*args)
 	# 	assert(args.size > 0, "Cannot have zero elements to sort", :ArgumentError)
 	# end
@@ -36,30 +54,17 @@ module Contract
 	# def post_define_comparator
 	# end
 
-	def post_sort(sorted_list, original_list, comparator)
-		(0..sorted_list.length - 2).step(1) { |i|
-			assert(comparator.call(sorted_list[i], sorted_list[i+1]) < 1, "List is not sorted.", :RuntimeError)
-		}
-		assert(sorted_list.length == original_list.length, 
-			"sorting a list should not change its length", :RangeError)
-		assert(
-			original_list.each_with_object(Hash.new(0)) { |obj,counts| counts[obj] += 1 } == 
-			sorted_list.each_with_object(Hash.new(0)) { |obj,counts| counts[obj] += 1 },
-			"Should be the same amount of each object after sorting as before sorting",
-			:RuntimeError)
-	end
-
-	def pre_parallel_merge_sort(a, p, r)
-		assert(a.is_a?(Array), "Must be sorting an array.", :ArgumentError)
-		assert(a.length > 0, 
-			"no valid objects to sort", :RangeError)
-		assert(a.all? {|i| i.is_a?(a[0].class) }, 
-			"all elements must be of same type", :TypeError)
-		assert(p.is_a?(Numeric), "Index p must be a number.", :ArgumentError)
-		assert(r.is_a?(Numeric), "Index r must be a number.", :ArgumentError)
-		assert(p.between?(0, a.size), "Index p out of bounds.", :KeyError)
-		assert(r.between?(0, a.size), "Indes r out of bounds.", :KeyError)
-	end
+	#def pre_parallel_merge_sort(a, p, r)
+	#	assert(a.is_a?(Array), "Must be sorting an array.", :ArgumentError)
+	#	assert(a.length > 0, 
+	#		"no valid objects to sort", :RangeError)
+	#	assert(a.all? {|i| i.is_a?(a[0].class) }, 
+	#		"all elements must be of same type", :TypeError)
+	#	assert(p.is_a?(Numeric), "Index p must be a number.", :ArgumentError)
+	#	assert(r.is_a?(Numeric), "Index r must be a number.", :ArgumentError)
+	#	assert(p.between?(0, a.size), "Index p out of bounds.", :KeyError)
+	#	assert(r.between?(0, a.size), "Indes r out of bounds.", :KeyError)
+	#end
 
 	# def post_parallel_merge_sort(sorted_list)
 	# 	sorted_list.size.times { |i|
@@ -69,15 +74,15 @@ module Contract
 	# 	}
 	# end
 
-	def pre_parallel_merge(left, right, list_to_sort, start_index)
-		assert(left.is_a?(Array), "Left partition must be an array.")
-		assert(right.is_a?(Array), "Right partition must be an array.")
-		assert(start_index.is_a?(Numeric), "Start index must be a number.")
-		assert(start_index >= 0, "Start index cannot be less than 0.", :KeyError)
-	end
+	#def pre_parallel_merge(left, right, list_to_sort, start_index)
+	#	assert(left.is_a?(Array), "Left partition must be an array.")
+	#	assert(right.is_a?(Array), "Right partition must be an array.")
+	#	assert(start_index.is_a?(Numeric), "Start index must be a number.")
+	#	assert(start_index >= 0, "Start index cannot be less than 0.", :KeyError)
+	#end
 
-	def post_parallel_merge
-	end
+	#def post_parallel_merge
+	#end
 
 	# def pre_new_list(objects)
 	# 	assert(objects.size > 0, "Cannot have zero elements to sort", :ArgumentError)

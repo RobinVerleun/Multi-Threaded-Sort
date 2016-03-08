@@ -1,6 +1,6 @@
 require_relative 'parallel_sort.rb'
 
-a = [ 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
+#a = [ 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 ]
 
 stringlist = [
 	"T - Starts with T",
@@ -16,5 +16,5 @@ stringlist = [
 	"O - Starts with O"
 ]
 
-puts a.sort(0.01){ |v1, v2| v2 <=> v1 }
+puts stringlist.sort(60)#{ |v1, v2| v2 <=> v1 }
 

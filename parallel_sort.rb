@@ -8,21 +8,8 @@ class Array
 	@duration
 	@comparator
 
-	def self.from_file(filename)
-		#pre_parse_file(filename, @@allowed_extensions)
-		extensions = {".csv"=>",", ".tsv"=>"\t", ".txt"=>" "}
-
-		delimiter = extensions[filename[-4..-1]]
-		the_list = []
-		File.open(filename, "r") do |infile|
-			the_list = infile.gets.split(delimiter)
-		end
-
-		Sort.new(the_list)
-	end
-
 	def sort(duration_, &block)
-		pre_sort(duration_)
+		pre_sort(duration_, self)
 
 		@duration = duration_
 		@list_to_sort = self
@@ -48,7 +35,7 @@ class Array
 
 	def parallel_merge_sort(a=@list_to_sort, p=0, r=@list_to_sort.length)
 
-		pre_parallel_merge_sort(a,p,r)
+		#pre_parallel_merge_sort(a,p,r)
 
 		if p < r
 			q = ((p + r)/2).floor
@@ -66,7 +53,7 @@ class Array
 
 	def parallel_merge(left_chunk, right_chunk, list_to_sort, start_index)
 
-		pre_parallel_merge(left_chunk, right_chunk, list_to_sort, start_index)
+		#pre_parallel_merge(left_chunk, right_chunk, list_to_sort, start_index)
 
 		threads = []
 
@@ -128,7 +115,20 @@ class Array
 		end
 
 		threads.each { |t| t.join }
-		post_parallel_merge
+		#post_parallel_merge
 	end
+
+	#def self.from_file(filename)
+	#	#pre_parse_file(filename, @@allowed_extensions)
+	#	extensions = {".csv"=>",", ".tsv"=>"\t", ".txt"=>" "}
+#
+#		delimiter = extensions[filename[-4..-1]]
+#		the_list = []
+#		File.open(filename, "r") do |infile|
+#			the_list = infile.gets.split(delimiter)
+#		end
+#
+#		Sort.new(the_list)
+#	end
 end
  	
