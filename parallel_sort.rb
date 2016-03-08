@@ -8,16 +8,6 @@ class Array
 	@duration
 	@comparator
 
-#	def initialize(args)
-#		pre_initialize(args)
-#
-#		@list_to_sort = args
-#		@comparator = Proc.new { |v1, v2| v1 <=> v2 }
-#		@comparator = yield if block_given?
-#
-#		invariant(@list_to_sort, @comparator)
-#	end
-
 	def self.from_file(filename)
 		#pre_parse_file(filename, @@allowed_extensions)
 		extensions = {".csv"=>",", ".tsv"=>"\t", ".txt"=>" "}
@@ -67,7 +57,7 @@ class Array
 			t1 = Thread.new{ parallel_merge_sort(a, p, q) }
 			t2 = Thread.new{ parallel_merge_sort(a, q + 1, r) }
 
-			#Notes show a way to have a thread-hash like object - we want to call join on all of them at once?
+			# Notes show a way to have a thread-hash like object - we want to call join on all of them at once?
 			t1.join
 			t2.join
 
@@ -75,7 +65,7 @@ class Array
 
 		end
 
-		#post_parallel_merge_sort(@list_to_sort)
+		# post_parallel_merge_sort(@list_to_sort)
 		invariant(@list_to_sort, @comparator)
 
 	end
@@ -105,12 +95,14 @@ class Array
 				list_to_sort[start_index + 1] = left_chunk[0]
 			end
 
-		#Array of substance - find middle points, and split the array	
+		# Array of substance - find middle points, and split the array	
 		else
 			lm = (left_chunk.size - 1) / 2
-			rm = (right_chunk.find_index{|item| @comparator.call(item, left_chunk[lm]) > -1} || right_chunk.size) - 1
+			rm = (right_chunk.find_index{|item| @comparator.call(item, 
+				left_chunk[lm]) > -1} || right_chunk.size) - 1
 			if rm >= 0
-				#Right chunk has enough size to have a middle value - thread left and right chunkcs independently
+				# Right chunk has enough size to have a middle value - thread 
+				# left and right chunkcs independently
 				threads << Thread.new{
 					parallel_merge(
 						left_chunk[0..lm], 
@@ -126,8 +118,10 @@ class Array
 				 		start_index + lm + rm + 2)
 				}
 			else
-				#Right has next to no elements in it - thread half of the left chunk to one side, half to the other side.
-				#Incorporate the right array into one thread in case of 0-2 element arrays
+				# Right has next to no elements in it - thread half of the left 
+				# chunk to one side, half to the other side.
+				#Incorporate the right array into one thread in case of 0-2 
+				# element arrays
 				threads << Thread.new{
 					parallel_merge(
 						left_chunk[0..lm],
@@ -151,20 +145,5 @@ class Array
 		invariant(@list_to_sort, @comparator)
 
 	end
-
-	def new_list(objects)
-		pre_new_list(objects)
-
-		@list_to_sort = objects
-
-		post_new_list(@list_to_sort, @comparator)
-		invariant(@list_to_sort, @comparator)
-	end
-
-	def puts_list
-		puts
-		@list_to_sort.each { |x| puts x }
-	end
-
 end
  	
