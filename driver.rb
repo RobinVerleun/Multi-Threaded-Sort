@@ -17,12 +17,13 @@ stringlist = [
 	"O - Starts with O"
 ]
 
-b = Sort.new(a){Proc.new { |v1, v2| v2 <=> v1 }}
+#b = Sort.new(a){Proc.new { |v1, v2| v2 <=> v1 }}
 # Or this:
 #b = Sort.from_file("test.csv")
 
 
-b.start(0.1)
+puts stringlist.start(10){ |v1, v2| v1 <=> v2 }
+puts a.start(10)
 
 # b.start(10)
 # b.puts_list
@@ -31,5 +32,5 @@ b.start(0.1)
 # b.new_list(stringlist)
 # b.start(10)
 
-b.puts_list
+#b.puts_list
 

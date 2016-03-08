@@ -1,22 +1,22 @@
 require 'timeout'
 require_relative 'contract.rb'
 
-class Sort	
+class Array	
 	include Contract
 
 	@list_to_sort
 	@duration
 	@comparator
 
-	def initialize(args)
-		pre_initialize(args)
-
-		@list_to_sort = args
-		@comparator = Proc.new { |v1, v2| v1 <=> v2 }
-		@comparator = yield if block_given?
-
-		invariant(@list_to_sort, @comparator)
-	end
+#	def initialize(args)
+#		pre_initialize(args)
+#
+#		@list_to_sort = args
+#		@comparator = Proc.new { |v1, v2| v1 <=> v2 }
+#		@comparator = yield if block_given?
+#
+#		invariant(@list_to_sort, @comparator)
+#	end
 
 	def self.from_file(filename)
 		#pre_parse_file(filename, @@allowed_extensions)
@@ -31,18 +31,18 @@ class Sort
 		Sort.new(the_list)
 	end
 
-	def define_comparator(comparator)
-		pre_define_comparator(comparator)
-
-		@comparator = comparator
-		
-		invariant(@list_to_sort, @comparator)
-	end
-
-	def start(duration_)
+	def start(duration_, &block)
 		pre_start(duration_)
 
 		@duration = duration_
+		@list_to_sort = self
+		
+		if block_given? 
+			@comparator = block
+		else
+			@comparator = Proc.new { |v1, v2| v1 <=> v2 }
+		end
+		
 		begin
 			Timeout::timeout(@duration) do
 				parallel_merge_sort(@list_to_sort, 0, @list_to_sort.size)
