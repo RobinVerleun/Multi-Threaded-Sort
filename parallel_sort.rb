@@ -33,6 +33,7 @@ class Array
 		return @list_to_sort
 	end
 
+	private
 	def parallel_merge_sort(a=@list_to_sort, p=0, r=@list_to_sort.length)
 
 		#pre_parallel_merge_sort(a,p,r)
