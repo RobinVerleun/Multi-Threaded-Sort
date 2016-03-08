@@ -36,10 +36,17 @@ module Contract
 	# def post_define_comparator
 	# end
 
-	def post_sort(sorted_list, comparator)
+	def post_sort(sorted_list, original_list, comparator)
 		(0..sorted_list.length - 2).step(1) { |i|
 			assert(comparator.call(sorted_list[i], sorted_list[i+1]) < 1, "List is not sorted.", :RuntimeError)
 		}
+		assert(sorted_list.length == original_list.length, 
+			"sorting a list should not change its length", :RangeError)
+		assert(
+			original_list.each_with_object(Hash.new(0)) { |obj,counts| counts[obj] += 1 } == 
+			sorted_list.each_with_object(Hash.new(0)) { |obj,counts| counts[obj] += 1 },
+			"Should be the same amount of each object after sorting as before sorting",
+			:RuntimeError)
 	end
 
 	def pre_parallel_merge_sort(a, p, r)

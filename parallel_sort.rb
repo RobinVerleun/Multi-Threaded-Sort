@@ -42,7 +42,7 @@ class Array
 				return
 			end
 
-		post_sort(@list_to_sort, @comparator)
+		post_sort(@list_to_sort, self, @comparator)
 		return @list_to_sort
 	end
 
