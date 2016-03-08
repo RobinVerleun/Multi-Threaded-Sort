@@ -7,8 +7,9 @@ module Contract
 		assert(duration_.is_a?(Numeric), "Invalid duration - should be a number.", :ArgumentError)
 		assert(duration_ > 0, "Must have positive duration.", :ArgumentError)
 		assert(self.is_a?(Array), "Can only be called on Array type object.", :TypeError)
+
 		assert(self.length > 0, "Cannot be called on zero elements.", :ArgumentError)
-		assert(self_.all? {|obj| obj.is_a?(self_[0].class) }, "All elements must be of the same type.", :ArgumentError)
+		assert(self_.all? {|obj| obj.is_a?(self_[0].class) }, "All elements must be of the same type.", :TypeError)
 	end
 
 	def post_sort(sorted_list, original_list, comparator)

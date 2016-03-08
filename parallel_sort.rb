@@ -25,7 +25,14 @@ class Array
 		return list_to_sort
 	end
 
+<<<<<<< HEAD
 	def parallel_merge_sort(a, p, r, comparator)
+=======
+	private
+	def parallel_merge_sort(a=@list_to_sort, p=0, r=@list_to_sort.length)
+
+		#pre_parallel_merge_sort(a,p,r)
+>>>>>>> 24c4af9cf8eced6f1615de1a719e88d407bb8892
 
 		if p < r
 			q = ((p + r)/2).floor
