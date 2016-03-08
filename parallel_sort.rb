@@ -42,8 +42,7 @@ class Array
 				return
 			end
 
-		invariant(@list_to_sort, @comparator)
-
+		post_sort(@list_to_sort, @comparator)
 		return @list_to_sort
 	end
 
@@ -66,12 +65,10 @@ class Array
 		end
 
 		# post_parallel_merge_sort(@list_to_sort)
-		invariant(@list_to_sort, @comparator)
-
 	end
 
 	def parallel_merge(left_chunk, right_chunk, list_to_sort, start_index)
-		
+
 		pre_parallel_merge(left_chunk, right_chunk, list_to_sort, start_index)
 
 		threads = []
@@ -142,8 +139,6 @@ class Array
 		threads.each { |t| t.join }
 
 		post_parallel_merge
-		invariant(@list_to_sort, @comparator)
-
 	end
 end
  	
